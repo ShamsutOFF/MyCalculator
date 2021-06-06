@@ -1,21 +1,52 @@
 package com.example.mycalculator;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "@@@ MainActivity";
-
+    private static final String TEXT_KEY = "TextViewKey";
+    private static final String NameSharedPreference = "LOGIN";  // Имя настроек
     private TextView textView;
+    private static final String AppTheme = "APP_THEME";   // Имя параметра в настройках
+    private static final int AppThemeBlue = 0;
+    private static final int AppThemeRed = 1;
+    private Switch switch1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(getAppTheme(R.style.AppThemeBlue));//
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate");
+        textView = findViewById(R.id.textView);
+        switch1 = findViewById(R.id._switch);
+
+
+        switch1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean checked = ((Switch) v).isChecked();
+                if (checked) {
+                    setAppTheme(AppThemeBlue);
+                    recreate();
+                } else {
+                    setAppTheme(AppThemeRed);
+                    recreate();
+                }
+            }
+        });
+
+        if (savedInstanceState != null && savedInstanceState.containsKey(TEXT_KEY)) {
+            textView.setText(savedInstanceState.getString(TEXT_KEY));
+        }
 
         findViewById(R.id.button_0).setOnClickListener(v -> updateTextView("0"));
         findViewById(R.id.button_1).setOnClickListener(v -> updateTextView("1"));
@@ -40,8 +71,41 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_equals).setOnClickListener(v -> myEquals());
     }
 
+    private int getAppTheme(int codeStyle) {
+        return codeStyleToStyleId(getCodeStyle(codeStyle));
+    }
+
+    // Чтение настроек, параметр «тема»
+    private int getCodeStyle(int codeStyle) {
+// Работаем через специальный класс сохранения и чтения настроек
+        SharedPreferences sharedPref = getSharedPreferences(NameSharedPreference, MODE_PRIVATE);
+//Прочитать тему, если настройка не найдена - взять по умолчанию
+        return sharedPref.getInt(AppTheme, codeStyle);
+    }
+
+    // Сохранение настроек
+    private void setAppTheme(int codeStyle) {
+        SharedPreferences sharedPref = getSharedPreferences(NameSharedPreference,
+                MODE_PRIVATE);
+// Настройки сохраняются посредством специального класса editor.
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(AppTheme, codeStyle);
+        editor.apply();
+    }
+
+    private int codeStyleToStyleId(int codeStyle) {
+        switch (codeStyle) {
+            case AppThemeBlue:
+                return R.style.AppThemeBlue;
+            case AppThemeRed:
+                return R.style.AppThemeRed;
+            default:
+                return R.style.AppTheme;
+        }
+    }
+
     private void updateTextView(String a) {
-        textView = findViewById(R.id.textView);
+
         if (textView.getText().equals("0")) {
             textView.setText(a);
         } else {
@@ -51,12 +115,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void clearTextInTextView() {
-        textView = findViewById(R.id.textView);
         textView.setText("0");
     }
 
     private void deleteLastTextInTextView() {
-        textView = findViewById(R.id.textView);
         String s = (String) textView.getText();
         if (s.length() == 1) {
             clearTextInTextView();
@@ -67,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void motion(String a) {
-        textView = findViewById(R.id.textView);
         String s = (String) textView.getText();
         if (s.contains("+") || s.contains("-") || s.contains(".") || s.contains("/") || s.contains("x")) {
             textView.setText(s);
@@ -77,19 +138,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void minus(String a) {
-        textView = findViewById(R.id.textView);
-        String s = (String) textView.getText();
-        if (s.contains("+") || s.contains("-") || s.contains(".")) {
-            textView.setText(s);
-        } else {
-            s = textView.getText() + a;
-            textView.setText(s);
-        }
-    }
 
     private void point(String a) {
-        textView = findViewById(R.id.textView);
         String s = (String) textView.getText();
         if (s.contains("+") || s.contains("-") || s.contains(".")) {
             textView.setText(s);
@@ -100,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void myEquals() {
-        textView = findViewById(R.id.textView);
         String s = (String) textView.getText();
         String[] numbers = new String[0];
         if (s.contains("+")) {
@@ -131,6 +180,18 @@ public class MainActivity extends AppCompatActivity {
             Integer rezult = one / two;
             textView.setText(rezult.toString());
         }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d(TAG, "onRestoreInstanceState");
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putString(TEXT_KEY, (String) textView.getText());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
