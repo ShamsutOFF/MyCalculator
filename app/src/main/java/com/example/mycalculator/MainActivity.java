@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,12 +14,14 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "@@@ MainActivity";
     private static final String TEXT_KEY = "TextViewKey";
-    private static final String NameSharedPreference = "LOGIN";  // Имя настроек
+    private static final String NAME_SHARED_PREFERENCE = "LOGIN";  // Имя настроек
     private TextView textView;
-    private static final String AppTheme = "APP_THEME";   // Имя параметра в настройках
-    private static final int AppThemeBlue = 0;
-    private static final int AppThemeRed = 1;
+    private static final String APP_THEME = "APP_THEME";   // Имя параметра в настройках
+    private static final int APP_THEME_BLUE = 0;
+    private static final int APP_THEME_RED = 1;
     private Switch switch1;
+    private String[] numbers = new String[2];
+    private String sign2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,16 +32,28 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         switch1 = findViewById(R.id._switch);
 
-
+//        switch1.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
+//
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    setAppTheme(APP_THEME_BLUE);
+//                    recreate();
+//                } else {
+//                    setAppTheme(APP_THEME_RED);
+//                    recreate();
+//                }
+//            }
+//        });
         switch1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean checked = ((Switch) v).isChecked();
                 if (checked) {
-                    setAppTheme(AppThemeBlue);
+                    setAppTheme(APP_THEME_BLUE);
                     recreate();
                 } else {
-                    setAppTheme(AppThemeRed);
+                    setAppTheme(APP_THEME_RED);
                     recreate();
                 }
             }
@@ -63,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.button_deleteLast).setOnClickListener(v -> deleteLastTextInTextView());
 
 //        findViewById(R.id.button_point).setOnClickListener(v -> motion("."));
-        findViewById(R.id.button_plus).setOnClickListener(v -> motion("+"));
+        findViewById(R.id.button_plus).setOnClickListener(v -> motion2("+"));
         findViewById(R.id.button_minus).setOnClickListener(v -> motion("-"));
         findViewById(R.id.button_multiply).setOnClickListener(v -> motion("x"));
         findViewById(R.id.button_divide).setOnClickListener(v -> motion("/"));
@@ -78,26 +93,26 @@ public class MainActivity extends AppCompatActivity {
     // Чтение настроек, параметр «тема»
     private int getCodeStyle(int codeStyle) {
 // Работаем через специальный класс сохранения и чтения настроек
-        SharedPreferences sharedPref = getSharedPreferences(NameSharedPreference, MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(NAME_SHARED_PREFERENCE, MODE_PRIVATE);
 //Прочитать тему, если настройка не найдена - взять по умолчанию
-        return sharedPref.getInt(AppTheme, codeStyle);
+        return sharedPref.getInt(APP_THEME, codeStyle);
     }
 
     // Сохранение настроек
     private void setAppTheme(int codeStyle) {
-        SharedPreferences sharedPref = getSharedPreferences(NameSharedPreference,
+        SharedPreferences sharedPref = getSharedPreferences(NAME_SHARED_PREFERENCE,
                 MODE_PRIVATE);
 // Настройки сохраняются посредством специального класса editor.
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putInt(AppTheme, codeStyle);
+        editor.putInt(APP_THEME, codeStyle);
         editor.apply();
     }
 
     private int codeStyleToStyleId(int codeStyle) {
         switch (codeStyle) {
-            case AppThemeBlue:
+            case APP_THEME_BLUE:
                 return R.style.AppThemeBlue;
-            case AppThemeRed:
+            case APP_THEME_RED:
                 return R.style.AppThemeRed;
             default:
                 return R.style.AppTheme;
@@ -128,16 +143,28 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void motion(String a) {
+    private void motion(String sign) {
         String s = (String) textView.getText();
-        if (s.contains("+") || s.contains("-") || s.contains(".") || s.contains("/") || s.contains("x")) {
+        if (s.contains("+") || s.contains("-") || s.contains("/") || s.contains("x")) {
             textView.setText(s);
         } else {
-            s = textView.getText() + a;
+            s = textView.getText() + sign;
             textView.setText(s);
         }
     }
 
+    private void motion2(String sign) {
+        sign2 = sign;
+        numbers[0] = (String) textView.getText();
+        if (numbers[0].endsWith(sign) || numbers[0].contains(sign)) {
+//            numbers[0] = numbers[0].substring(0, numbers[0].length() - 1);
+//            textView.setText(textView.getText());
+            Toast.makeText(getApplicationContext(), numbers[0], Toast.LENGTH_SHORT).show();
+        } else {
+            textView.setText(textView.getText() + sign);
+            Toast.makeText(getApplicationContext(), numbers[0], Toast.LENGTH_SHORT).show();
+        }
+    }
 
     private void point(String a) {
         String s = (String) textView.getText();
@@ -151,33 +178,32 @@ public class MainActivity extends AppCompatActivity {
 
     private void myEquals() {
         String s = (String) textView.getText();
-        String[] numbers = new String[0];
         if (s.contains("+")) {
             numbers = s.split("\\+");
-            int one = Integer.parseInt(numbers[0].trim());
-            int two = Integer.parseInt(numbers[1].trim());
-            Integer rezult = one + two;
+            double one = Double.parseDouble(numbers[0].trim());
+            double two = Double.parseDouble(numbers[1].trim());
+            Double rezult = one + two;
             textView.setText(rezult.toString());
         }
         if (s.contains("-")) {
             numbers = s.split("-");
-            int one = Integer.parseInt(numbers[0].trim());
-            int two = Integer.parseInt(numbers[1].trim());
-            Integer rezult = one - two;
+            double one = Double.parseDouble(numbers[0].trim());
+            double two = Double.parseDouble(numbers[1].trim());
+            Double rezult = one - two;
             textView.setText(rezult.toString());
         }
         if (s.contains("x")) {
             numbers = s.split("x");
-            int one = Integer.parseInt(numbers[0].trim());
-            int two = Integer.parseInt(numbers[1].trim());
-            Integer rezult = one * two;
+            double one = Double.parseDouble(numbers[0].trim());
+            double two = Double.parseDouble(numbers[1].trim());
+            Double rezult = one * two;
             textView.setText(rezult.toString());
         }
         if (s.contains("/")) {
             numbers = s.split("/");
-            int one = Integer.parseInt(numbers[0].trim());
-            int two = Integer.parseInt(numbers[1].trim());
-            Integer rezult = one / two;
+            double one = Double.parseDouble(numbers[0].trim());
+            double two = Double.parseDouble(numbers[1].trim());
+            Double rezult = one / two;
             textView.setText(rezult.toString());
         }
     }
