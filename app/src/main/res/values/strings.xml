@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyCalculator</string>
+    <string name="app_name">ShamsutOFFsCalculator</string>
     <string name="_1">1</string>
     <string name="_2">2</string>
     <string name="_3">3</string>
@@ -19,4 +19,5 @@
     <string name="_percent">%</string>
     <string name="_deleteLast">d</string>
     <string name="_ac">c</string>
+    <string name="defult_textView_text">0</string>
 </resources>
