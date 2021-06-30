@@ -1,9 +1,12 @@
 package com.example.mycalculator;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,20 +20,42 @@ public class MainActivity extends AppCompatActivity {
     private static final String NAME_SHARED_PREFERENCE = "LOGIN";  // Имя настроек
     private TextView textView;
     private static final String APP_THEME = "APP_THEME";   // Имя параметра в настройках
-    private static final int APP_THEME_BLUE = 0;
-    private static final int APP_THEME_RED = 1;
+    private static final int APP_THEME_RED = 0;
+    private static final int APP_THEME_BLUE = 1;
+    private static final int APP_THEME_GREEN = 2;
+    private static final int APP_THEME_YELLOW = 3;
     private Switch switch1;
     private String[] numbers = new String[2];
     private String sign2;
+    private ImageView imageView;
+    private Button settingsButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTheme(getAppTheme(R.style.AppThemeBlue));//
+        if (getIntent().hasExtra(String.valueOf(SettingsActivity.AppTheme))) {
+            setAppTheme(getIntent().getIntExtra(String.valueOf(SettingsActivity.AppTheme), 0));
+//            if (getAppTheme(0)!= SettingsActivity.AppTheme){
+//                recreate();
+//            }
+        }
+        setTheme(getAppTheme(APP_THEME_RED));//
         setContentView(R.layout.activity_main);
         Log.d(TAG, "onCreate");
+
         textView = findViewById(R.id.textView);
         switch1 = findViewById(R.id._switch);
+        settingsButton = findViewById(R.id.settings_button);
+
+        imageView = findViewById(R.id.imageView);
+        imageView.setImageResource(R.drawable.fon);
+        getSupportActionBar().hide();
+
+
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            this.startActivity(intent);
+        });
 
 //        switch1.setOnCheckedChangeListener(new Switch.OnCheckedChangeListener() {
 //
@@ -50,10 +75,12 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 boolean checked = ((Switch) v).isChecked();
                 if (checked) {
-                    setAppTheme(APP_THEME_BLUE);
+                    getIntent().putExtra(String.valueOf(APP_THEME_BLUE), APP_THEME_BLUE);
+//                    setAppTheme(APP_THEME_BLUE);
                     recreate();
                 } else {
-                    setAppTheme(APP_THEME_RED);
+                    getIntent().putExtra(String.valueOf(APP_THEME_RED), APP_THEME_RED);
+//                    setAppTheme(APP_THEME_RED);
                     recreate();
                 }
             }
@@ -87,11 +114,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private int getAppTheme(int codeStyle) {
+        Log.d(TAG, "Сработал getAppTheme " + codeStyle);
         return codeStyleToStyleId(getCodeStyle(codeStyle));
     }
 
     // Чтение настроек, параметр «тема»
     private int getCodeStyle(int codeStyle) {
+        Log.d(TAG, "Сработал getCodeStyle " + codeStyle);
 // Работаем через специальный класс сохранения и чтения настроек
         SharedPreferences sharedPref = getSharedPreferences(NAME_SHARED_PREFERENCE, MODE_PRIVATE);
 //Прочитать тему, если настройка не найдена - взять по умолчанию
@@ -100,20 +129,28 @@ public class MainActivity extends AppCompatActivity {
 
     // Сохранение настроек
     private void setAppTheme(int codeStyle) {
+        Log.d(TAG, "Сработал setAppTheme " + codeStyle);
         SharedPreferences sharedPref = getSharedPreferences(NAME_SHARED_PREFERENCE,
                 MODE_PRIVATE);
 // Настройки сохраняются посредством специального класса editor.
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putInt(APP_THEME, codeStyle);
         editor.apply();
+//        Toast.makeText(getApplicationContext(), APP_THEME,
+//                Toast.LENGTH_SHORT).show();
     }
 
     private int codeStyleToStyleId(int codeStyle) {
+        Log.d(TAG, "Сработал codeStyleToStyleId " + codeStyle);
         switch (codeStyle) {
-            case APP_THEME_BLUE:
-                return R.style.AppThemeBlue;
             case APP_THEME_RED:
                 return R.style.AppThemeRed;
+            case APP_THEME_BLUE:
+                return R.style.AppThemeBlue;
+            case APP_THEME_GREEN:
+                return R.style.AppThemeGreen;
+            case APP_THEME_YELLOW:
+                return R.style.AppThemeYellow;
             default:
                 return R.style.AppTheme;
         }
@@ -218,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putString(TEXT_KEY, (String) textView.getText());
         super.onSaveInstanceState(outState);
+        Log.d(TAG, "onSaveInstanceState");
     }
 
     @Override

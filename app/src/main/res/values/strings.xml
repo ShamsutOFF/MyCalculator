@@ -20,4 +20,10 @@
     <string name="_deleteLast">d</string>
     <string name="_ac">c</string>
     <string name="defult_textView_text">0</string>
+    <string name="settings_text">Настройте цвет кнопок:</string>
+    <string name="Yellow">Желтый</string>
+    <string name="Green">Зеленый</string>
+    <string name="Blue">Синий</string>
+    <string name="Red">Красный</string>
+    <string name="ok">ок</string>
 </resources>

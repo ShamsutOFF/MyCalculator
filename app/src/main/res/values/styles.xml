@@ -15,21 +15,32 @@
         <item name="android:layout_marginStart">6dp</item>
         <item name="android:textSize">@dimen/button_text</item>
         <item name="cornerRadius">40dp</item>
+        <item name="android:alpha">1</item>
         <item name="layout_constraintHorizontal_chainStyle">packed</item>
     </style>
 
-    <style name="AppThemeBlue" parent="AppTheme">
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryDark">@color/purple_700</item>
-        <item name="colorAccent">@color/teal_200</item>
-        <item name="colorOnPrimary">@color/black</item>
-
-    </style>
-
     <style name="AppThemeRed" parent="Theme.MaterialComponents.Light">
-        <item name="colorPrimary">#e91e63</item>
+        <item name="colorPrimary">@color/red</item>
         <item name="colorPrimaryDark">#b0003a</item>
         <item name="colorAccent">#ff6090</item>
+    </style>
+
+    <style name="AppThemeBlue" parent="AppTheme">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+    </style>
+
+    <style name="AppThemeGreen" parent="AppTheme">
+        <item name="colorPrimary">@color/green</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+    </style>
+
+    <style name="AppThemeYellow" parent="AppTheme">
+        <item name="colorPrimary">@color/yellow</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
     </style>
 
     <style name="AppThemeDark" parent="Theme.MaterialComponents"></style>
